@@ -2,51 +2,58 @@ package com.harium.rigger.examples;
 
 import com.badlogic.gdx.math.Vector3;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class Armature {
 
+    private static final float WEIGHT_DEFAULT = 1;
+
     private Vector3 position;
-    private Map<Bone, List<Vector3>> associations;
+    private Map<Bone, Map<Vector3, Float>> weights;
+
 
     public Armature() {
         position = new Vector3();
-        associations = new HashMap<>();
+        weights = new HashMap<>();
     }
 
     public Armature(float x, float y, float z) {
         position = new Vector3(x, y, z);
-        associations = new HashMap<>();
+        weights = new HashMap<>();
     }
 
     public Armature(Vector3 position) {
         this.position = position;
-        associations = new HashMap<>();
+        weights = new HashMap<>();
     }
 
     public void addBone(Bone bone) {
-        associations.put(bone, new ArrayList<Vector3>());
+        weights.put(bone, new HashMap<Vector3, Float>());
     }
 
     public void associate(Bone bone, Vector3 vertex) {
-        List<Vector3> list = associations.get(bone);
-        list.add(vertex);
+        associate(bone, vertex, WEIGHT_DEFAULT);
+    }
+
+    public void associate(Bone bone, Vector3 vertex, float weight) {
+        Map<Vector3, Float> map = weights.get(bone);
+        map.put(vertex, weight);
     }
 
     public void update() {
-        for (Bone bone : associations.keySet()) {
+        for (Bone bone : weights.keySet()) {
             updateBone(bone);
         }
     }
 
     private void updateBone(Bone bone) {
-        List<Vector3> list = associations.get(bone);
+        Map<Vector3, Float> list = weights.get(bone);
         // Apply rotation to own vertices
-        for (Vector3 vertex : list) {
-            bone.apply(vertex);
+        for (Map.Entry<Vector3, Float> entry : list.entrySet()) {
+            Vector3 vertex = entry.getKey();
+            float weight = entry.getValue();
+            bone.apply(vertex, weight);
         }
         // Apply rotation to children
         for (Bone child : bone.getChildren()) {
@@ -55,9 +62,11 @@ public class Armature {
     }
 
     private void updateBone(Bone bone, Bone child) {
-        List<Vector3> vertices = associations.get(child);
-        for (Vector3 vertex : vertices) {
-            bone.apply(vertex);
+        Map<Vector3, Float> list = weights.get(child);
+        for (Map.Entry<Vector3, Float> entry : list.entrySet()) {
+            Vector3 vertex = entry.getKey();
+            float weight = entry.getValue();
+            bone.apply(vertex, weight);
         }
         // Apply the rotation to children
         for (Bone grandchild : child.getChildren()) {

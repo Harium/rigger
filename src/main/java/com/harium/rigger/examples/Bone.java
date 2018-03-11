@@ -32,6 +32,18 @@ public class Bone {
         quaternion.transform(vertex);
     }
 
+    public void apply(Vector3 vertex, float weight) {
+        Quaternion weightQuaternion = weightQuaternion(weight);
+        weightQuaternion.transform(vertex);
+    }
+
+    private Quaternion weightQuaternion(float weight) {
+        // Don't worry, JVM takes care of polling
+        Quaternion weightQuaternion = new Quaternion();
+        weightQuaternion.slerp(quaternion, weight);
+        return weightQuaternion;
+    }
+
     public void setEulerAngles(float yaw, float pitch, float roll) {
         quaternion.setEulerAngles(yaw, pitch, roll);
     }

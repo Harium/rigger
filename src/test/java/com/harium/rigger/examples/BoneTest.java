@@ -27,6 +27,32 @@ public class BoneTest {
     }
 
     @Test
+    public void testBoneRotationWithWeight() {
+        Armature armature = new Armature();
+
+        Bone bone = new Bone();
+        armature.addBone(bone);
+
+        Vector3 vertex = new Vector3(1, 0, 0);
+        armature.associate(bone, vertex, 0.5f);
+
+        bone.setEulerAngles(-90, 0, 0);
+        armature.update();
+
+        Assert.assertEquals(0.7, vertex.x, EPSILON);
+        Assert.assertEquals(0, vertex.y, EPSILON);
+        Assert.assertEquals(0.7, vertex.z, EPSILON);
+
+        // Turn more -90 again, (total) -180
+        bone.setEulerAngles(-90, 0, 0);
+        armature.update();
+
+        Assert.assertEquals(0, vertex.x, EPSILON);
+        Assert.assertEquals(0, vertex.y, EPSILON);
+        Assert.assertEquals(1, vertex.z, EPSILON);
+    }
+
+    @Test
     public void testBoneAffectingChildVertex() {
         Armature armature = new Armature();
 
