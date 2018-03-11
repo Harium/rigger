@@ -73,4 +73,37 @@ public class Armature {
             updateBone(bone, grandchild);
         }
     }
+
+    public void reset() {
+        for (Bone bone : weights.keySet()) {
+            resetBone(bone);
+        }
+    }
+
+    private void resetBone(Bone bone) {
+        Map<Vector3, Float> list = weights.get(bone);
+        // Apply rotation to own vertices
+        for (Map.Entry<Vector3, Float> entry : list.entrySet()) {
+            Vector3 vertex = entry.getKey();
+            float weight = entry.getValue();
+            bone.reset(vertex, weight);
+        }
+        // Apply rotation to children
+        for (Bone child : bone.getChildren()) {
+            resetBone(bone, child);
+        }
+    }
+
+    private void resetBone(Bone bone, Bone child) {
+        Map<Vector3, Float> list = weights.get(child);
+        for (Map.Entry<Vector3, Float> entry : list.entrySet()) {
+            Vector3 vertex = entry.getKey();
+            float weight = entry.getValue();
+            bone.reset(vertex, weight);
+        }
+        // Apply the rotation to children
+        for (Bone grandchild : child.getChildren()) {
+            resetBone(bone, grandchild);
+        }
+    }
 }

@@ -4,7 +4,7 @@ import com.badlogic.gdx.math.Vector3;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class BoneTest {
+public class ArmatureTest {
 
     private static final float EPSILON = 0.1f;
 
@@ -24,6 +24,55 @@ public class BoneTest {
         Assert.assertEquals(0, vertex.x, EPSILON);
         Assert.assertEquals(0, vertex.y, EPSILON);
         Assert.assertEquals(1, vertex.z, EPSILON);
+    }
+
+    @Test
+    public void testBoneApplyInvertedRotation() {
+        Armature armature = new Armature();
+
+        Bone bone = new Bone();
+        armature.addBone(bone);
+
+        Vector3 vertex = new Vector3(1, 0, 0);
+        armature.associate(bone, vertex);
+
+        bone.setEulerAngles(-90, 0, 0);
+        armature.update();
+
+        Assert.assertEquals(0, vertex.x, EPSILON);
+        Assert.assertEquals(0, vertex.y, EPSILON);
+        Assert.assertEquals(1, vertex.z, EPSILON);
+
+        bone.setEulerAngles(90, 0, 0);
+        armature.update();
+
+        Assert.assertEquals(1, vertex.x, EPSILON);
+        Assert.assertEquals(0, vertex.y, EPSILON);
+        Assert.assertEquals(0, vertex.z, EPSILON);
+    }
+
+    @Test
+    public void testResetPose() {
+        Armature armature = new Armature();
+
+        Bone bone = new Bone();
+        armature.addBone(bone);
+
+        Vector3 vertex = new Vector3(1, 0, 0);
+        armature.associate(bone, vertex);
+
+        bone.setEulerAngles(-90, 0, 0);
+        armature.update();
+
+        Assert.assertEquals(0, vertex.x, EPSILON);
+        Assert.assertEquals(0, vertex.y, EPSILON);
+        Assert.assertEquals(1, vertex.z, EPSILON);
+
+        armature.reset();
+
+        Assert.assertEquals(1, vertex.x, EPSILON);
+        Assert.assertEquals(0, vertex.y, EPSILON);
+        Assert.assertEquals(0, vertex.z, EPSILON);
     }
 
     @Test

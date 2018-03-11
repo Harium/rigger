@@ -37,6 +37,15 @@ public class Bone {
         weightQuaternion.transform(vertex);
     }
 
+    public void reset(Vector3 vertex, float weight) {
+        Quaternion weightQuaternion = weightQuaternion(weight);
+        weightQuaternion.x = -weightQuaternion.x;
+        weightQuaternion.y = -weightQuaternion.y;
+        weightQuaternion.z = -weightQuaternion.z;
+
+        weightQuaternion.transform(vertex);
+    }
+
     private Quaternion weightQuaternion(float weight) {
         // Don't worry, JVM takes care of polling
         Quaternion weightQuaternion = new Quaternion();
